@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(antarctic-system-monitor LANGUAGES CXX)
+project(Qttest LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -27,14 +27,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 if(ANDROID)
-  add_library(antarctic-system-monitor SHARED
+  add_library(Qttest SHARED
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
   )
 else()
-  add_executable(antarctic-system-monitor
+  add_executable(Qttest
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -42,4 +42,4 @@ else()
   )
 endif()
 
-target_link_libraries(antarctic-system-monitor PRIVATE Qt5::Widgets)
+target_link_libraries(Qttest PRIVATE Qt5::Widgets)
