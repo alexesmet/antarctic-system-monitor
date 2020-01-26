@@ -1,6 +1,6 @@
 ### EARLY DEVELOPMENT, DOES NOTHING USEFUL FOR NOW
 ### antarctic-system-monitor
-Cross-platform (Linux, Windows, MacOS) system monitor that displays usage graphs for:
+Cross-platform (Linux, Windows, MacOS) system monitor that will display usage graphs for:
 * CPU
 * GPU
 * Disk
