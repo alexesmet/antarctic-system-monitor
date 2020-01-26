@@ -12,10 +12,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(antarctic-system-monitor
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
+    gui/main.cpp
+    gui/mainwindow.cpp
+    gui/mainwindow.h
+    gui/mainwindow.ui
   )
 
 target_link_libraries(antarctic-system-monitor PRIVATE Qt5::Widgets)
