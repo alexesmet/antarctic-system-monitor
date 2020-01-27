@@ -37,7 +37,7 @@ namespace proc {
             this->dir.d_type = dir->d_type;
             this->dir.d_reclen = dir->d_reclen;
         }
-        procces(const procces & proc) {
+        procces(const procces& proc) {
             dir = proc.dir;
             path = proc.path;
             name = proc.name;
@@ -48,17 +48,12 @@ namespace proc {
         std::string relativeRead(std::string path) {
             std::ifstream pathFile(this->path + path);
             std::string out;
-            if (pathFile) {
-                std::getline(pathFile, out);
-            }
+            pathFile >> out;
             return out;
         }
     };
 
-    static
     struct Storage {
         std::vector<procces> procceses;
-    }
-    storage;
-
+    };
 }

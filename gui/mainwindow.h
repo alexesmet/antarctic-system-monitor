@@ -17,7 +17,7 @@ public:
     MainWindow(QWidget * parent = nullptr);
     ~MainWindow();
 
-    void _testGetProccesess(proc::Storage & storage);
+    void _testGetProccesess(proc::Storage& storage);
 
 private:
     Ui::MainWindow * ui;

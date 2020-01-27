@@ -54,8 +54,13 @@ namespace allPids {
                 if ( (task.pid = isPid(task.dir.d_name) ) != 0 ) {
                     task.path = std::string(PROC_DIRECTORY) + task.dir.d_name;
                     task.cmdlime = task.relativeRead("/cmdline");
-                    if (task.cmdlime.length() > 0) {
+                    if (task.cmdlime.length() > 0 && task.pid == 1376) {
                         task.name = task.relativeRead("/comm");
+                        std::cout << "\nd_name: " << task.dir.d_name
+                                  << "\npid: " << task.pid
+                                  << "\nname: " << task.name
+                                  << "\npath: " << task.path
+                                  << "\ncmdline: " << task.cmdlime;
                         storage.procceses.push_back(task);
                     }
                 }

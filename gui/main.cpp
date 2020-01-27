@@ -14,8 +14,9 @@
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
-    allPids::get(proc::storage);
-    w._testGetProccesess(proc::storage);
+    proc::Storage storage;
+    allPids::get(storage);
+    w._testGetProccesess(storage);
     w.show();
     return a.exec();
 }
