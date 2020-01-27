@@ -2,6 +2,7 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include "ui_mainwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -13,10 +14,7 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
     public:
         MainWindow(QWidget* parent = nullptr);
-        ~MainWindow();
-        bool getAllTasks();
-
     private:
-        Ui::MainWindow* ui;
+        std::unique_ptr<Ui::MainWindow> ui;
 };
 #endif //MAINWINDOW_HPP

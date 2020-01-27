@@ -27,7 +27,7 @@ optional<string> get_all_processes() {
     struct dirent * dirEntity = nullptr;
     DIR* dir_proc = nullptr;
 
-    dir_proc = opendir(PROC_DIRECTORY) ;
+    dir_proc = opendir(PROC_DIRECTORY);
     if (!dir_proc) {
         std::cerr << "Couldn't open the "<< PROC_DIRECTORY << "directory: " << std::strerror(errno);
         return {};
@@ -37,14 +37,13 @@ optional<string> get_all_processes() {
     while ((dirEntity = readdir(dir_proc))) {
         if (dirEntity->d_type == DT_DIR) {
             if (is_number(dirEntity->d_name)) {
-                string path = std::string(PROC_DIRECTORY) + dirEntity->d_name + "/cmdline";
-                std::cout << path;
+                string path = string{PROC_DIRECTORY} + dirEntity->d_name + "/cmdline";
                 ifstream cmdLineFile{path};
                 string cmdLine;
                 if (cmdLineFile) {
                     std::getline(cmdLineFile, cmdLine);
                 }
-                if (cmdLine.length() > 0) {
+                if (!cmdLine.empty()) {
                     temp_str += "pid: ";
                     temp_str += dirEntity->d_name;
                     temp_str += " ";
