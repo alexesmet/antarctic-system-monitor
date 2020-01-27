@@ -3,22 +3,19 @@
 #include <sys/types.h> // for opendir(), readdir(), closedir()
 #include <sys/stat.h> // for stat()
 
-#include <iostream>
 #include <cstdlib>
 #include <cstdio>
-#include <fstream>
 
 #include <QApplication>
 #include <QTextEdit>
-
+#include "../core/allpids.h"
 #include "mainwindow.h"
-
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
-    w.getAllTasks();
-
+    allPids::get(proc::storage);
+    w._testGetProccesess(proc::storage);
     w.show();
     return a.exec();
 }

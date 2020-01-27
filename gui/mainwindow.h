@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "../core/processes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -15,7 +16,8 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget * parent = nullptr);
     ~MainWindow();
-    bool getAllTasks();
+
+    void _testGetProccesess(proc::Storage & storage);
 
 private:
     Ui::MainWindow * ui;

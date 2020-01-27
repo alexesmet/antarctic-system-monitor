@@ -13,6 +13,8 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(antarctic-system-monitor
     gui/main.cpp
+    core/processes.h
+    core/allpids.h
     gui/mainwindow.cpp
     gui/mainwindow.h
     gui/mainwindow.ui
