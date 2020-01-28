@@ -40,7 +40,7 @@ namespace allPids {
     */
     int get(proc::Storage & storage) {
         dirent * dir = nullptr;
-        proc::procces task;
+        proc::Process task;
         DIR * dir_proc = nullptr;
 
         dir_proc = opendir(PROC_DIRECTORY);

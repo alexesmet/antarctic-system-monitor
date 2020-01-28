@@ -16,7 +16,7 @@
 
 namespace proc {
 
-    struct procces {
+    struct Process {
         int pid = 0;
 
         dirent dir;
@@ -71,14 +71,14 @@ namespace proc {
             this->dir.d_type = dir->d_type;
             this->dir.d_reclen = dir->d_reclen;
         }
-        procces(const procces& proc) {
+        Process(const Process& proc) {
             dir = proc.dir;
             path = proc.path;
             name = proc.name;
             pid = proc.pid;
             cmdlime = proc.cmdlime;
         }
-        procces() {}
+        Process() {}
         std::string relativeRead(std::string path) {
             std::ifstream pathFile(this->path + path);
             std::string out;
@@ -107,6 +107,6 @@ namespace proc {
     };
 
     struct Storage {
-        std::vector<procces> procceses;
+        std::vector<Process> procceses;
     };
 }
