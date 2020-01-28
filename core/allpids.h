@@ -15,7 +15,7 @@
 
 namespace allPids {
 
-    pid_t isPid(const char * name) {
+    pid_t toNum(const char * name) {
         pid_t pid = 0;
         while (*name != 0) {
             if (*name < '0' || *name > '9') return 0;
@@ -51,18 +51,19 @@ namespace allPids {
         while ((dir = readdir(dir_proc)) != nullptr) {
             task.sedDir(dir);
             if (task.dir.d_type == DT_DIR) {
-                if ( (task.pid = isPid(task.dir.d_name) ) != 0 ) {
+                if ( (task.pid = toNum(task.dir.d_name) ) != 0 ) {
                     task.path = std::string(PROC_DIRECTORY) + task.dir.d_name;
                     task.cmdlime = task.relativeRead("/cmdline");
-                    if (task.cmdlime.length() > 0 && task.pid == 1376) {
-                        task.name = task.relativeRead("/comm");
-                        std::cout << "\nd_name: " << task.dir.d_name
-                                  << "\npid: " << task.pid
-                                  << "\nname: " << task.name
-                                  << "\npath: " << task.path
-                                  << "\ncmdline: " << task.cmdlime;
+                    //if (task.cmdlime.length() > 0) {
+                        //task.name = task.relativeRead("/comm");
+                        task.name = task.relativeReadLink("/exe");
+                        std::cout << "\nd_name: "  << task.dir.d_name
+                                  << "\npid: "     << task.pid
+                                  << "\nname: "    << task.name
+                                  << "\npath: "    << task.path
+                                  << "\ncmdline: " << task.cmdlime << '\n';
                         storage.procceses.push_back(task);
-                    }
+                    //}
                 }
             }
         }
