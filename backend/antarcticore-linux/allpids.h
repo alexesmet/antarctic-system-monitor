@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIMA_ALLPIDS
+#define DIMA_ALLPIDS
 
 #include <unistd.h>
 #include <dirent.h>
@@ -73,3 +74,4 @@ namespace allPids {
 
     #undef PROC_DIRECTORY
 }
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIMA_PROCESSES
+#define DIMA_PROCESSES
 
 #include <unistd.h>
 #include <dirent.h>
@@ -12,7 +13,6 @@
 #include <vector>
 #include <utility>
 #include <string.h>
-
 
 namespace proc {
 
@@ -110,3 +110,4 @@ namespace proc {
         std::vector<Process> procceses;
     };
 }
+#endif
