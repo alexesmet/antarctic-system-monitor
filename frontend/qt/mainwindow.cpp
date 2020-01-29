@@ -7,7 +7,7 @@ using std::to_string;
 using proc::Process;
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow{parent} {
+    : QMainWindow(parent),  ui(new Ui::MainWindow) {
     ui->setupUi(this);
 }
 

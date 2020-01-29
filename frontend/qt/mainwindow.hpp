@@ -16,8 +16,9 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
     public:
         MainWindow(QWidget* parent = nullptr);
+        //~MainWindow();
         void update(const std::vector<proc::Process> & proc_list);
     private:
-        std::unique_ptr<Ui::MainWindow> ui;
+        Ui::MainWindow * ui;
 };
 #endif //MAINWINDOW_HPP
