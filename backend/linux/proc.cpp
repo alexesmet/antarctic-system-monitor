@@ -1,4 +1,4 @@
-#include "proc.hpp"
+#include "../proc.hpp"
 
 using std::vector;
 using std::string;
@@ -84,22 +84,24 @@ namespace proc {
 
        После выполнения улсловий, процесс
     */
-    vector<Process> getProcList() {
+    std::vector<Process> getAllProccess() {
         dirent * dir = nullptr;
         Process task;
         DIR * dir_proc = nullptr;
 
+        std::vector<Process> out;
+
         dir_proc = opendir(PROC_DIRECTORY);
         if (dir_proc == nullptr) {
-            perror("Couldn't open the " PROC_DIRECTORY " directory") ;
-            return (pid_t) -2 ;
+            std::cerr << "Couldn't open the " << PROC_DIRECTORY << " directory";
+            return out;
         }
         while ((dir = readdir(dir_proc)) != nullptr) {
             task.sedDir(dir);
             if (task.dir.d_type == DT_DIR) {
-                if ( (task.pid = (task.dir.d_name) ) != 0 ) {
+                if ( (task.pid = utils::toNum(task.dir.d_name) ) != 0 ) {
                     task.path = std::string(PROC_DIRECTORY) + task.dir.d_name;
-                    task.cmdlime = task.relativeRead("/cmdline");
+                    task.cmdline = task.relativeRead("/cmdline");
                     //if (task.cmdlime.length() > 0) {
                         //task.name = task.relativeRead("/comm");
                         task.name = task.relativeReadLink("/exe");
@@ -107,13 +109,13 @@ namespace proc {
                                   << "\npid: "     << task.pid
                                   << "\nname: "    << task.name
                                   << "\npath: "    << task.path
-                                  << "\ncmdline: " << task.cmdlime << '\n';
-                        storage.procceses.push_back(task);
+                                  << "\ncmdline: " << task.cmdline << '\n';
+                        out.push_back(task);
                     //}
                 }
             }
         }
         closedir(dir_proc);
-        return 0;
+        return out;
     }
 }

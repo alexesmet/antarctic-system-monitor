@@ -1,11 +1,11 @@
 #include <QApplication>
 #include "mainwindow.hpp"
-#include "../../backend/linux/allpids.h"
+#include "../../backend/proc.hpp"
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
-    allPids::get(storage);
+    std::vector<proc::Process> storage = proc::getAllProccess();
     w.update(storage);
     w.show();
     return a.exec();
