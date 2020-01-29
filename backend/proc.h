@@ -13,18 +13,14 @@
 #include <vector>
 #include <utility>
 #include <string.h>
+#include <cstdint>
 
 namespace proc {
-
     struct Process {
-        int pid = 0;
-
-        dirent dir;
-
+        uint32_t pid;
         std::string path;
         std::string name;
-        std::string cmdlime;
-
+        std::string cmdline;
         std::string stdin;
         std::string stdout;
         std::string stderr;
@@ -71,14 +67,8 @@ namespace proc {
             this->dir.d_type = dir->d_type;
             this->dir.d_reclen = dir->d_reclen;
         }
-        Process(const Process& proc) {
-            dir = proc.dir;
-            path = proc.path;
-            name = proc.name;
-            pid = proc.pid;
-            cmdlime = proc.cmdlime;
-        }
-        Process() {}
+
+        Process() = delete;
         std::string relativeRead(std::string path) {
             std::ifstream pathFile(this->path + path);
             std::string out;
@@ -106,8 +96,52 @@ namespace proc {
         }
     };
 
-    struct Storage {
-        std::vector<Process> procceses;
-    };
+    //В /proc/ лежат папки - все процессы, которые запущены, или были запущены
+    #define PROC_DIRECTORY "/proc/"
+
+    /*
+    Суть:
+       В папке /proc/ лежат папки процессов
+       Поэтому считываем все папки из /proc/
+       Проверяем их на имя типа "10203"
+       Получаем файл cmdline из папки
+       Чекаем на то, чтобы cmdline был
+
+       После выполнения улсловий, процесс
+    */
+    vector<Process> getProcList() {
+        dirent * dir = nullptr;
+        proc::Process task;
+        DIR * dir_proc = nullptr;
+
+        dir_proc = opendir(PROC_DIRECTORY);
+        if (dir_proc == nullptr) {
+            perror("Couldn't open the " PROC_DIRECTORY " directory") ;
+            return (pid_t) -2 ;
+        }
+        while ((dir = readdir(dir_proc)) != nullptr) {
+            task.sedDir(dir);
+            if (task.dir.d_type == DT_DIR) {
+                if ( (task.pid = (task.dir.d_name) ) != 0 ) {
+                    task.path = std::string(PROC_DIRECTORY) + task.dir.d_name;
+                    task.cmdlime = task.relativeRead("/cmdline");
+                    //if (task.cmdlime.length() > 0) {
+                        //task.name = task.relativeRead("/comm");
+                        task.name = task.relativeReadLink("/exe");
+                        std::cout << "\nd_name: "  << task.dir.d_name
+                                  << "\npid: "     << task.pid
+                                  << "\nname: "    << task.name
+                                  << "\npath: "    << task.path
+                                  << "\ncmdline: " << task.cmdlime << '\n';
+                        storage.procceses.push_back(task);
+                    //}
+                }
+            }
+        }
+        closedir(dir_proc);
+        return 0;
+    }
+
+    #undef PROC_DIRECTORY
 }
 #endif
