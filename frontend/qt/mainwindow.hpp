@@ -19,6 +19,6 @@ class MainWindow: public QMainWindow {
         //~MainWindow();
         void update(const std::vector<proc::Process> & proc_list);
     private:
-        Ui::MainWindow * ui;
+        std::unique_ptr<Ui::MainWindow> ui {new Ui::MainWindow};
 };
 #endif //MAINWINDOW_HPP
