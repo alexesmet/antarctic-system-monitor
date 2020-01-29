@@ -1,13 +1,19 @@
 #include "../proc.hpp"
 
+#include <cstdlib>
+#include <fstream>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <iostream>
+
 using std::vector;
 using std::string;
+using std::strtol;
 
 namespace proc {
     int Process::loadFd() {
         dirent * dir = nullptr;
         DIR * dir_proc = nullptr;
-
         std::string fd = path + "/fd/";
 
         dir_proc = opendir( fd.c_str());
@@ -40,16 +46,16 @@ namespace proc {
         return 0;
     }
 
-    void Process::sedDir(dirent * dir) {
+    /*void Process::sedDir(dirent * dir) {
         this->dir.d_ino = dir->d_ino;
         this->dir.d_off = dir->d_off;
         strcpy(this->dir.d_name, dir->d_name);
         this->dir.d_type = dir->d_type;
         this->dir.d_reclen = dir->d_reclen;
-    }
+    }*/
 
     std::string Process::relativeRead(std::string path) {
-        std::ifstream pathFile(this->path + path);
+        std::ifstream pathFile{this->path + path};
         std::string out;
         pathFile >> out;
         return out;
@@ -59,7 +65,7 @@ namespace proc {
         std::string final_path = this->path + path;
 
         struct stat sb;
-        if (lstat(final_path.c_str(), &sb) == -1) return std::string("");
+        if (lstat(final_path.c_str(), &sb) == -1) return {};
 
         ssize_t bufsize;
         if (sb.st_size == 0) bufsize = PATH_MAX;
@@ -67,12 +73,12 @@ namespace proc {
 
         char buf[1024];
         ssize_t nbytes = readlink(final_path.c_str(), buf, bufsize);
-        if (nbytes == -1) return std::string("");
+        if (nbytes == -1) return {};
         buf[nbytes] = 0;
 
         printf("'%s' points to '%.*s'\n", final_path.c_str(), (int) nbytes, buf);
 
-        return std::string(buf);
+        return std::string{buf};
     }
     /*
     Суть:
@@ -97,21 +103,19 @@ namespace proc {
             return out;
         }
         while ((dir = readdir(dir_proc)) != nullptr) {
-            task.sedDir(dir);
-            if (task.dir.d_type == DT_DIR) {
-                if ( (task.pid = utils::toNum(task.dir.d_name) ) != 0 ) {
-                    task.path = std::string(PROC_DIRECTORY) + task.dir.d_name;
+            if (dir->d_type == DT_DIR) {
+                auto pid = static_cast<uint32_t>(strtol(dir->d_name, nullptr, 10));
+                if (errno != ERANGE) {
+                    task.pid = pid;
+                    task.path = std::string(PROC_DIRECTORY) + dir->d_name;
                     task.cmdline = task.relativeRead("/cmdline");
-                    //if (task.cmdlime.length() > 0) {
-                        //task.name = task.relativeRead("/comm");
-                        task.name = task.relativeReadLink("/exe");
-                        std::cout << "\nd_name: "  << task.dir.d_name
-                                  << "\npid: "     << task.pid
-                                  << "\nname: "    << task.name
-                                  << "\npath: "    << task.path
-                                  << "\ncmdline: " << task.cmdline << '\n';
-                        out.push_back(task);
-                    //}
+                    task.name = task.relativeReadLink("/exe");
+                    std::cout << "\npid: "  << task.pid
+                              << "\nname: "    << task.name
+                              << "\npath: "    << task.path
+                              << "\ncmdline: " << task.cmdline << '\n';
+                    out.push_back(task);
+                    errno = 0;
                 }
             }
         }
