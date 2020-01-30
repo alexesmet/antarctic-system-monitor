@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-//#include "utils.hpp"
+#include "utils.hpp"
 
 namespace proc {
     // В /proc/ лежат папки - все процессы, которые запущены, или были запущены
@@ -18,9 +18,16 @@ namespace proc {
         std::string path;
         std::string name;
         std::string cmdline;
+
         std::string stdin;
         std::string stdout;
         std::string stderr;
+
+        std::vector<size_t> sockets;
+        std::vector<size_t> pipes;
+        std::vector<std::string> other;
+        std::vector<std::string> inodes;
+
 
         int loadFd();
         void sedDir(dirent* dir);
