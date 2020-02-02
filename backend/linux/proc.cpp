@@ -15,31 +15,44 @@ namespace proc {
         dirent * dir = nullptr;
         DIR * dir_proc = nullptr;
         std::string fd = path + "/fd/";
-
+        std::string temp;
         dir_proc = opendir( fd.c_str());
         if (dir_proc == nullptr) {
-            perror( ("Couldn't open the " + fd + " directory").c_str());
+            std::cerr << "Couldn't open the " + fd + " directory" << std::endl;
             return -2;
         }
+
+        fd = "/fd/";
+
+        const std::string socket = "socket";
+        const std::string anon_inode = "anon_inode";
+        const std::string pipe = "pipe";
+
+        sockets.clear();
+        pipes.clear();
+        other.clear();
+        inodes.clear();
+
         while ((dir = readdir(dir_proc)) != nullptr) {
-            if (dir->d_name[1] == 0) {
-                switch (dir->d_name[0]) {
-                case '0':
-                    stdin = relativeReadLink(fd + dir->d_name);
-                    continue;
-                case '1':
-                    stdout = relativeReadLink(fd + dir->d_name);
-                    continue;
-                case '2':
-                    stderr = relativeReadLink(fd + dir->d_name);
-                    continue;
-                default:
-                    break;
+            if (dir->d_type == DT_LNK) {
+
+                temp = relativeReadLink(fd + dir->d_name);
+                std::cout << temp << std::endl;
+                if      (strcmp(dir->d_name, "0") == 0) stdin  = temp;
+                else if (strcmp(dir->d_name, "1") == 0) stdout = temp;
+                else if (strcmp(dir->d_name, "2") == 0) stderr = temp;
+
+                if      (temp.find(socket)     == 0) //нужен нормальный toNum
+                    sockets.push_back(utils::toNum(utils::getFdValue(temp, socket).c_str()));
+                else if (temp.find(anon_inode) == 0)
+                    inodes. push_back(             utils::getFdValue(temp, anon_inode));
+                else if (temp.find(pipe)       == 0) //нужен нормальный toNum
+                    pipes.  push_back(utils::toNum(utils::getFdValue(temp, pipe).c_str()));
+                else {
+                    other.  push_back(temp);
+                    std::cout << "other = " << temp << std::endl;
                 }
             }
-            //TODO:
-            //folder fd keep sockets, pipes and something else
-            //value from relativeReadLink need to interpret correctly
         }
         closedir(dir_proc);
 
@@ -65,7 +78,10 @@ namespace proc {
         std::string final_path = this->path + path;
 
         struct stat sb;
-        if (lstat(final_path.c_str(), &sb) == -1) return {};
+        if (lstat(final_path.c_str(), &sb) == -1) {
+            std::cerr << "lstat for " << final_path << " is -1" << std::endl;
+            return {};
+        }
 
         ssize_t bufsize;
         if (sb.st_size == 0) bufsize = PATH_MAX;
@@ -73,10 +89,11 @@ namespace proc {
 
         char buf[1024];
         ssize_t nbytes = readlink(final_path.c_str(), buf, bufsize);
-        if (nbytes == -1) return {};
+        if (nbytes == -1){
+            std::cerr << "nbytes for " << final_path << " is -1" << std::endl;
+            return {};
+        }
         buf[nbytes] = 0;
-
-        printf("'%s' points to '%.*s'\n", final_path.c_str(), (int) nbytes, buf);
 
         return std::string{buf};
     }
@@ -104,18 +121,18 @@ namespace proc {
         }
         while ((dir = readdir(dir_proc)) != nullptr) {
             if (dir->d_type == DT_DIR) {
-                auto pid = static_cast<uint32_t>(strtol(dir->d_name, nullptr, 10));
-                if (errno != ERANGE) {
+                //auto pid = static_cast<uint32_t>(strtol(dir->d_name, nullptr, 10));
+                //if (errno != ERANGE) {
+                //Закоменчено, потому что проверку errno != ERANGE проходят
+                //абсолютно все папки из /proc/
+                int pid = utils::toNum(dir->d_name);
+                if (pid != 0) {
                     task.pid = pid;
                     task.path = std::string(PROC_DIRECTORY) + dir->d_name;
                     task.cmdline = task.relativeRead("/cmdline");
                     task.name = task.relativeReadLink("/exe");
-                    std::cout << "\npid: "  << task.pid
-                              << "\nname: "    << task.name
-                              << "\npath: "    << task.path
-                              << "\ncmdline: " << task.cmdline << '\n';
                     out.push_back(task);
-                    errno = 0;
+                    //errno = 0;
                 }
             }
         }
